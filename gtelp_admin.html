@@ -192,72 +192,38 @@
       background: #218838;
     }
 
-    .mapping-info {
-      background: #fff3e0;
-      border-left: 4px solid #ff9800;
+    .feature-info {
+      background: #e8f5e9;
+      border-left: 4px solid #4caf50;
       padding: 15px;
       margin-bottom: 20px;
       border-radius: 4px;
     }
 
-    .mapping-info h4 {
-      color: #e65100;
+    .feature-info h4 {
+      color: #2e7d32;
       margin-bottom: 10px;
       font-size: 14px;
       font-weight: 600;
     }
 
-    .mapping-table {
-      width: 100%;
-      font-size: 12px;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 4px;
-      overflow: hidden;
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
     }
 
-    .mapping-table tr:hover {
-      background: #f5f5f5;
+    .feature-list li {
+      padding: 5px 0;
+      color: #555;
+      font-size: 13px;
     }
 
-    .mapping-table td {
-      padding: 8px 12px;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .mapping-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .mapping-table td:first-child {
-      font-weight: 600;
-      color: #d84315;
-      width: 35%;
-      font-family: 'Courier New', monospace;
-    }
-
-    .mapping-table td:nth-child(2) {
-      font-weight: 600;
-      color: #1976D2;
-      width: 30%;
-      font-family: 'Courier New', monospace;
-    }
-
-    .mapping-table td:last-child {
-      color: #666;
-    }
-
-    .url-test {
-      background: #e8f5e9;
-      border: 1px solid #4caf50;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
-
-    .url-test strong {
-      color: #2e7d32;
+    .feature-list li:before {
+      content: "✓ ";
+      color: #4caf50;
+      font-weight: bold;
+      margin-right: 5px;
     }
   </style>
 </head>
@@ -268,75 +234,16 @@
     <span>📂</span>
     G-TELP CSV → JSON 변환기
   </h1>
-  <p class="subtitle">⚠️ 링크 활성화를 위한 정확한 필드 매핑</p>
+  <p class="subtitle">✨ AI 제목 분석으로 기업명, 직종명, 접수일 자동 추출</p>
   
-  <div class="mapping-info">
-    <h4>🔥 중요! 화면에서 사용하는 필드명으로 변환</h4>
-    <table class="mapping-table">
-      <tr>
-        <td>CSV 컬럼</td>
-        <td>JSON 필드</td>
-        <td>설명</td>
-      </tr>
-      <tr>
-        <td>job_title</td>
-        <td>job_title</td>
-        <td>채용공고 제목 (그대로 유지)</td>
-      </tr>
-      <tr>
-        <td>company_name</td>
-        <td>company_name</td>
-        <td>회사명 (그대로 유지)</td>
-      </tr>
-      <tr>
-        <td>location</td>
-        <td>location</td>
-        <td>근무지역 (그대로 유지)</td>
-      </tr>
-      <tr>
-        <td>salary</td>
-        <td>salary</td>
-        <td>급여정보 (그대로 유지)</td>
-      </tr>
-      <tr>
-        <td>job_url</td>
-        <td>job_url</td>
-        <td>⭐ 링크 (그대로 유지!)</td>
-      </tr>
-      <tr>
-        <td>source_site</td>
-        <td>source_site</td>
-        <td>출처 사이트 (그대로 유지)</td>
-      </tr>
-      <tr>
-        <td>search_keyword</td>
-        <td>search_keyword</td>
-        <td>검색 키워드 (그대로 유지)</td>
-      </tr>
-      <tr>
-        <td>organization_type</td>
-        <td>organization_type</td>
-        <td>기관 유형 (그대로 유지)</td>
-      </tr>
-      <tr>
-        <td>gtelp_relevance</td>
-        <td>gtelp_relevance</td>
-        <td>관련도 (그대로 유지)</td>
-      </tr>
-      <tr>
-        <td>collection_date</td>
-        <td>collection_date</td>
-        <td>수집 날짜 (그대로 유지)</td>
-      </tr>
-      <tr>
-        <td>collection_time</td>
-        <td>collection_time</td>
-        <td>수집 시간 (그대로 유지)</td>
-      </tr>
-    </table>
-    <div class="url-test">
-      <strong>💡 전략:</strong> 필드명을 변경하지 않고 그대로 유지하되, job_url 값만 https:// 형식으로 정리합니다.
-    </div>
+  <div class="feature-info">
+    <h4>🤖 자동 제목 분석 기능</h4>
+    <ul class="feature-list">
+      <li>채용공고 제목에서 <strong>기업명</strong> 자동 추출</li>
+      <li>채용공고 제목에서 <strong>직종명</strong> 자동 추출</li>
+      <li>채용공고 제목에서 <strong>접수일/마감일</strong> 자동 추출</li>
+      <li>추출된 정보는 별도 필드로 저장 (companyExtracted, positionExtracted, deadlineExtracted)</li>
+    </ul>
   </div>
   
   <div class="upload-section">
@@ -360,16 +267,16 @@
         <div class="stat-label">총 데이터 수</div>
       </div>
       <div class="stat-box">
-        <div class="stat-number" id="totalFields">0</div>
-        <div class="stat-label">CSV 컬럼 수</div>
+        <div class="stat-number" id="extractedCompanies">0</div>
+        <div class="stat-label">기업명 추출</div>
       </div>
       <div class="stat-box">
-        <div class="stat-number" id="validUrls">0</div>
-        <div class="stat-label">유효한 링크</div>
+        <div class="stat-number" id="extractedPositions">0</div>
+        <div class="stat-label">직종명 추출</div>
       </div>
       <div class="stat-box">
-        <div class="stat-number" id="fileSize">0</div>
-        <div class="stat-label">파일 크기</div>
+        <div class="stat-number" id="extractedDeadlines">0</div>
+        <div class="stat-label">접수일 추출</div>
       </div>
     </div>
   </div>
@@ -424,6 +331,102 @@ function parseCSV(text) {
   return result;
 }
 
+// 제목에서 기업명 추출
+function extractCompanyName(title) {
+  // 패턴 1: [기업명] 또는 (기업명)
+  const bracketMatch = title.match(/[\[【\(]([^)\]】]+)[\]】\)]/);
+  if (bracketMatch) {
+    const name = bracketMatch[1].trim();
+    // 채용, 모집 등의 키워드가 없으면 기업명으로 판단
+    if (!name.match(/채용|모집|공고|구인|입사|지원/)) {
+      return name;
+    }
+  }
+  
+  // 패턴 2: "회사명 채용" 형태
+  const companyMatch = title.match(/^([가-힣a-zA-Z0-9&\s]+?)\s*(채용|모집|구인)/);
+  if (companyMatch) {
+    return companyMatch[1].trim();
+  }
+  
+  // 패턴 3: 주식회사, ㈜, (주) 포함
+  const corpMatch = title.match(/(주식회사|㈜|\(주\))\s*([가-힣a-zA-Z0-9]+)/);
+  if (corpMatch) {
+    return corpMatch[0].trim();
+  }
+  
+  return '';
+}
+
+// 제목에서 직종명 추출
+function extractPosition(title) {
+  // 일반적인 직종 키워드
+  const positionKeywords = [
+    '교사', '강사', '인스트럭터', '선생님', '튜터',
+    '영업', '마케팅', '매니저', '관리자', '담당자',
+    '개발자', '프로그래머', '엔지니어', '디자이너',
+    '코디네이터', '어시스턴트', '비서', '사무원',
+    '연구원', '분석가', '컨설턴트', '전문가',
+    '스크랩', '스캐너', '스크램', 'G-TELP', 'GTELP',
+    'teacher', 'instructor', 'manager', 'coordinator',
+    'specialist', 'analyst', 'consultant', 'assistant'
+  ];
+  
+  for (let keyword of positionKeywords) {
+    if (title.toLowerCase().includes(keyword.toLowerCase())) {
+      // 키워드 주변 텍스트 추출
+      const regex = new RegExp(`([가-힣a-zA-Z\\s]{0,10}${keyword}[가-힣a-zA-Z\\s]{0,10})`, 'i');
+      const match = title.match(regex);
+      if (match) {
+        return match[1].trim();
+      }
+    }
+  }
+  
+  // 패턴: "~직" 형태
+  const jikMatch = title.match(/([가-힣]+직)/);
+  if (jikMatch) {
+    return jikMatch[1];
+  }
+  
+  return '';
+}
+
+// 제목에서 접수일/마감일 추출
+function extractDeadline(title) {
+  // 패턴 1: YYYY-MM-DD 또는 YYYY.MM.DD
+  const dateMatch = title.match(/\d{4}[-./]\d{1,2}[-./]\d{1,2}/);
+  if (dateMatch) {
+    return dateMatch[0];
+  }
+  
+  // 패턴 2: MM/DD 또는 MM.DD
+  const shortDateMatch = title.match(/\d{1,2}[./]\d{1,2}/);
+  if (shortDateMatch) {
+    return shortDateMatch[0];
+  }
+  
+  // 패턴 3: D-숫자
+  const dDayMatch = title.match(/D-\d+/i);
+  if (dDayMatch) {
+    return dDayMatch[0];
+  }
+  
+  // 패턴 4: ~월 ~일
+  const koreanDateMatch = title.match(/\d{1,2}월\s*\d{1,2}일/);
+  if (koreanDateMatch) {
+    return koreanDateMatch[0];
+  }
+  
+  // 패턴 5: "~까지", "~마감"
+  const untilMatch = title.match(/(\d{1,2}[./]\d{1,2})\s*(까지|마감)/);
+  if (untilMatch) {
+    return untilMatch[1] + ' 마감';
+  }
+  
+  return '';
+}
+
 // 파일 크기 포맷
 function formatFileSize(bytes) {
   if (bytes < 1024) return bytes + ' B';
@@ -454,25 +457,18 @@ function isValidUrl(string) {
   }
 }
 
-// URL 정리 및 검증 함수
-function cleanAndValidateUrl(url) {
-  if (!url || url === '') return '';
+// URL 정리
+function cleanUrl(url) {
+  if (!url) return '';
   
   url = url.trim();
   
-  // 이미 올바른 형식이면 그대로 반환
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
   
-  // www나 도메인 형태면 https:// 추가
   if (url.startsWith('www.') || /^[a-z0-9-]+\.[a-z]{2,}/i.test(url)) {
     return 'https://' + url;
-  }
-  
-  // 슬래시로 시작하면 상대경로일 가능성 - 일단 그대로
-  if (url.startsWith('/')) {
-    return url;
   }
   
   return url;
@@ -504,7 +500,12 @@ function convertCSVtoJSON() {
       
       console.log('📋 CSV 헤더:', headers);
       
-      // JSON 데이터 생성 - 필드명 변경 없이 그대로 유지!
+      // 통계 카운터
+      let extractedCompaniesCount = 0;
+      let extractedPositionsCount = 0;
+      let extractedDeadlinesCount = 0;
+      
+      // JSON 데이터 생성
       const jsonData = rows.slice(1).map((row, index) => {
         const jsonObj = {};
         
@@ -518,13 +519,44 @@ function convertCSVtoJSON() {
           
           // job_url 필드만 URL 정리
           if (header === 'job_url' && value) {
-            value = cleanAndValidateUrl(value);
-            console.log(`🔗 [${index}] URL 처리:`, value);
+            value = cleanUrl(value);
           }
           
-          // 필드명 그대로 사용!
           jsonObj[header] = value;
         });
+        
+        // 제목 분석 및 추가 필드 생성
+        const title = jsonObj.job_title || '';
+        
+        if (title) {
+          // 기업명 추출
+          const extractedCompany = extractCompanyName(title);
+          if (extractedCompany) {
+            jsonObj.companyExtracted = extractedCompany;
+            extractedCompaniesCount++;
+          }
+          
+          // 직종명 추출
+          const extractedPosition = extractPosition(title);
+          if (extractedPosition) {
+            jsonObj.positionExtracted = extractedPosition;
+            extractedPositionsCount++;
+          }
+          
+          // 접수일/마감일 추출
+          const extractedDeadline = extractDeadline(title);
+          if (extractedDeadline) {
+            jsonObj.deadlineExtracted = extractedDeadline;
+            extractedDeadlinesCount++;
+          }
+          
+          console.log(`[${index}] 제목 분석:`, {
+            원본: title,
+            기업명: extractedCompany || '없음',
+            직종명: extractedPosition || '없음',
+            접수일: extractedDeadline || '없음'
+          });
+        }
         
         return jsonObj;
       });
@@ -534,38 +566,14 @@ function convertCSVtoJSON() {
         return Object.values(item).some(val => val !== "");
       });
       
-      // URL 유효성 검사
-      let validUrlCount = 0;
-      let urlStats = { valid: [], invalid: [] };
-      
-      filteredData.forEach((item, index) => {
-        if (item.job_url) {
-          if (isValidUrl(item.job_url)) {
-            validUrlCount++;
-            urlStats.valid.push(item.job_url);
-          } else {
-            urlStats.invalid.push({ index, url: item.job_url });
-          }
-        }
-      });
-      
       convertedData = filteredData;
       
       // 통계 표시
       document.getElementById('totalRows').textContent = filteredData.length;
-      document.getElementById('totalFields').textContent = headers.length;
-      document.getElementById('validUrls').textContent = validUrlCount;
-      document.getElementById('fileSize').textContent = formatFileSize(file.size);
+      document.getElementById('extractedCompanies').textContent = extractedCompaniesCount;
+      document.getElementById('extractedPositions').textContent = extractedPositionsCount;
+      document.getElementById('extractedDeadlines').textContent = extractedDeadlinesCount;
       document.getElementById('statsSection').classList.remove('hidden');
-      
-      // URL 검증 결과 상세
-      console.log('✅ 유효한 URL:', validUrlCount);
-      console.log('❌ 유효하지 않은 URL:', urlStats.invalid);
-      
-      if (urlStats.invalid.length > 0) {
-        console.log('🔍 문제 URL 샘플:', urlStats.invalid.slice(0, 3));
-        showAlert(`⚠️ ${urlStats.invalid.length}개 항목의 링크가 유효하지 않습니다. (콘솔 확인)`, 'warning');
-      }
       
       // 미리보기 (처음 2개만)
       const preview = filteredData.slice(0, 2);
@@ -576,10 +584,9 @@ function convertCSVtoJSON() {
       document.getElementById('previewSection').classList.remove('hidden');
       document.getElementById('downloadBtn').classList.remove('hidden');
       
-      showAlert(`✅ 변환 완료! ${filteredData.length}개 데이터 (유효 링크: ${validUrlCount}개)`, 'success');
+      showAlert(`✅ 변환 완료! 기업명 ${extractedCompaniesCount}개, 직종명 ${extractedPositionsCount}개, 접수일 ${extractedDeadlinesCount}개 추출`, 'success');
       
-      console.log('✨ 변환 샘플 (필드명 확인!):', filteredData[0]);
-      console.log('🔑 필드명 목록:', Object.keys(filteredData[0]));
+      console.log('✨ 변환 샘플:', filteredData[0]);
       
     } catch (error) {
       showAlert('CSV 파일 형식이 올바르지 않습니다: ' + error.message, 'error');
@@ -607,10 +614,6 @@ function downloadJSON() {
   link.href = URL.createObjectURL(blob);
   link.download = 'gtelp_data.json';
   link.click();
-  
-  console.log('💾 다운로드 완료!');
-  console.log('📊 총 데이터:', convertedData.length);
-  console.log('🔗 job_url 필드 존재 확인:', convertedData[0].job_url ? '✅ 있음' : '❌ 없음');
   
   showAlert('💾 gtelp_data.json 파일이 다운로드되었습니다!', 'success');
 }
