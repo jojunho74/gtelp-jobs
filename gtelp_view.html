@@ -22,7 +22,7 @@ body{
   border-radius:20px;
   box-shadow:0 10px 40px rgba(0,0,0,0.15);
   text-align:center;
-  margin-bottom:30px;
+  margin-bottom:20px;
 }
 .header h1{
   color:#667eea;
@@ -36,158 +36,94 @@ body{
   margin:0;
 }
 
-/* 챗봇 스타일 배너 */
-.chatbot-banner{
-  position:fixed;
-  bottom:30px;
-  right:30px;
-  z-index:1000;
-  transition:all 0.3s ease;
-}
-.chatbot-widget{
-  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+/* IBT 배너 */
+.ibt-banner{
+  background:linear-gradient(135deg,#ff6b6b 0%,#ee5a6f 100%);
+  padding:25px 30px;
   border-radius:20px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.3);
-  overflow:hidden;
-  width:350px;
-  max-height:500px;
-  display:none;
-  animation:slideUp 0.3s ease;
-}
-.chatbot-widget.show{
-  display:block;
-}
-@keyframes slideUp{
-  from{
-    opacity:0;
-    transform:translateY(20px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-.chatbot-header{
-  background:rgba(255,255,255,0.2);
-  padding:20px;
+  box-shadow:0 10px 40px rgba(255,107,107,0.3);
+  margin-bottom:30px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  position:relative;
+  overflow:hidden;
+  animation:bannerPulse 3s ease-in-out infinite;
 }
-.chatbot-header h3{
-  color:white;
-  margin:0;
-  font-size:18px;
-  display:flex;
-  align-items:center;
-  gap:10px;
+@keyframes bannerPulse{
+  0%,100%{
+    box-shadow:0 10px 40px rgba(255,107,107,0.3);
+  }
+  50%{
+    box-shadow:0 10px 50px rgba(255,107,107,0.5);
+  }
 }
-.chatbot-close{
-  background:transparent;
-  border:none;
-  color:white;
-  font-size:24px;
-  cursor:pointer;
-  width:30px;
-  height:30px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.ibt-banner:before{
+  content:'';
+  position:absolute;
+  top:-50%;
+  right:-10%;
+  width:200px;
+  height:200px;
+  background:rgba(255,255,255,0.1);
   border-radius:50%;
-  transition:all 0.3s;
 }
-.chatbot-close:hover{
-  background:rgba(255,255,255,0.2);
+.ibt-banner:after{
+  content:'';
+  position:absolute;
+  bottom:-30%;
+  left:-5%;
+  width:150px;
+  height:150px;
+  background:rgba(255,255,255,0.1);
+  border-radius:50%;
 }
-.chatbot-body{
-  background:white;
-  padding:25px;
+.ibt-content{
+  flex:1;
+  z-index:1;
 }
-.chatbot-message{
-  background:#f8f9fa;
-  padding:15px;
-  border-radius:15px;
-  margin-bottom:15px;
-  border-left:4px solid #667eea;
-}
-.chatbot-message h4{
-  color:#667eea;
-  margin:0 0 10px 0;
-  font-size:16px;
-  font-weight:700;
-}
-.chatbot-message p{
-  color:#555;
-  margin:0 0 10px 0;
-  line-height:1.6;
-  font-size:14px;
-}
-.chatbot-features{
-  list-style:none;
-  padding:0;
-  margin:10px 0;
-}
-.chatbot-features li{
-  padding:5px 0;
-  color:#555;
+.ibt-badge{
+  display:inline-block;
+  background:rgba(255,255,255,0.3);
+  color:white;
+  padding:5px 15px;
+  border-radius:20px;
   font-size:13px;
-  display:flex;
+  font-weight:700;
+  margin-bottom:10px;
+  border:2px solid rgba(255,255,255,0.5);
+}
+.ibt-title{
+  color:white;
+  font-size:1.8em;
+  font-weight:700;
+  margin:0 0 8px 0;
+  text-shadow:0 2px 4px rgba(0,0,0,0.1);
+}
+.ibt-subtitle{
+  color:rgba(255,255,255,0.95);
+  font-size:1em;
+  margin:0;
+}
+.ibt-button{
+  background:white;
+  color:#ff6b6b;
+  padding:15px 35px;
+  border-radius:30px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:16px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.2);
+  transition:all 0.3s;
+  z-index:1;
+  display:inline-flex;
   align-items:center;
   gap:8px;
 }
-.chatbot-features li:before{
-  content:"✓";
-  color:#667eea;
-  font-weight:bold;
-  font-size:16px;
-}
-.chatbot-link{
-  display:block;
-  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-  color:white;
-  text-align:center;
-  padding:12px 20px;
-  border-radius:25px;
-  text-decoration:none;
-  font-weight:700;
-  margin-top:15px;
-  transition:all 0.3s;
-  box-shadow:0 4px 15px rgba(102,126,234,0.3);
-}
-.chatbot-link:hover{
-  transform:translateY(-2px);
-  box-shadow:0 6px 20px rgba(102,126,234,0.4);
-}
-.chatbot-trigger{
-  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-  color:white;
-  border:none;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  font-size:28px;
-  cursor:pointer;
-  box-shadow:0 8px 25px rgba(102,126,234,0.4);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:all 0.3s;
-  animation:pulse 2s infinite;
-}
-@keyframes pulse{
-  0%,100%{
-    box-shadow:0 8px 25px rgba(102,126,234,0.4);
-  }
-  50%{
-    box-shadow:0 8px 35px rgba(102,126,234,0.6);
-  }
-}
-.chatbot-trigger:hover{
-  transform:scale(1.1);
-}
-.chatbot-trigger.active{
-  display:none;
+.ibt-button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.3);
+  background:#fff5f5;
 }
 
 /* 검색 및 필터 섹션 */
@@ -248,6 +184,7 @@ body{
   gap:10px;
   flex-wrap:wrap;
   align-items:center;
+  margin-bottom:15px;
 }
 .filter-label{
   font-weight:600;
@@ -464,13 +401,13 @@ body{
   .filters{
     justify-content:center;
   }
-  .chatbot-banner{
-    bottom:20px;
-    right:20px;
+  .ibt-banner{
+    flex-direction:column;
+    gap:20px;
+    text-align:center;
   }
-  .chatbot-widget{
-    width:calc(100vw - 40px);
-    max-width:350px;
+  .ibt-title{
+    font-size:1.4em;
   }
 }
 </style>
@@ -482,6 +419,19 @@ body{
     <p>지텔프 관련 최신 채용 공고를 한눈에 확인하세요</p>
   </div>
 
+  <!-- IBT 무료 시험 배너 -->
+  <div class="ibt-banner">
+    <div class="ibt-content">
+      <span class="ibt-badge">🎁 무료 혜택</span>
+      <h2 class="ibt-title">무료 IBT시험 파일럿 무료신청</h2>
+      <p class="ibt-subtitle">온라인으로 편리하게 응시하는 G-TELP IBT 시험 - 선착순 무료 체험!</p>
+    </div>
+    <a href="https://g-telp-ibt-6d5d4q2.gamma.site/" target="_blank" rel="noopener noreferrer" class="ibt-button">
+      <span>🚀 지금 신청하기</span>
+    </a>
+  </div>
+
+  <!-- 검색 및 필터 섹션 -->
   <div class="search-section">
     <div class="search-box">
       <input 
@@ -495,15 +445,29 @@ body{
       <button class="clear-btn" onclick="clearSearch()">초기화</button>
     </div>
     
+    <!-- 직종 필터 -->
     <div class="filters">
-      <span class="filter-label">지역:</span>
+      <span class="filter-label">💼 직종:</span>
+      <button class="filter-btn" data-filter="position" data-value="">전체</button>
+      <button class="filter-btn" data-filter="position" data-value="교사">교사/강사</button>
+      <button class="filter-btn" data-filter="position" data-value="영업">영업/마케팅</button>
+      <button class="filter-btn" data-filter="position" data-value="개발">개발/IT</button>
+      <button class="filter-btn" data-filter="position" data-value="관리">관리/행정</button>
+      <button class="filter-btn" data-filter="position" data-value="코디네이터">코디네이터</button>
+    </div>
+    
+    <!-- 지역 필터 -->
+    <div class="filters">
+      <span class="filter-label">📍 지역:</span>
       <button class="filter-btn" data-filter="location" data-value="">전체</button>
       <button class="filter-btn" data-filter="location" data-value="서울">서울</button>
       <button class="filter-btn" data-filter="location" data-value="경기">경기</button>
       <button class="filter-btn" data-filter="location" data-value="인천">인천</button>
       <button class="filter-btn" data-filter="location" data-value="부산">부산</button>
+      <button class="filter-btn" data-filter="location" data-value="대구">대구</button>
+      <button class="filter-btn" data-filter="location" data-value="대전">대전</button>
       
-      <span class="filter-label" style="margin-left:20px">정렬:</span>
+      <span class="filter-label" style="margin-left:20px">📊 정렬:</span>
       <select class="sort-select" id="sortSelect" onchange="sortJobs()">
         <option value="company">회사명순</option>
         <option value="recent">최신순</option>
@@ -512,10 +476,12 @@ body{
     </div>
   </div>
 
+  <!-- 검색 결과 표시 -->
   <div class="search-result-info" id="searchResultInfo">
     <span class="search-result-text" id="searchResultText"></span>
   </div>
 
+  <!-- 통계 -->
   <div class="stats" id="statsBar" style="display:none;">
     <div class="stat-item">
       <div class="stat-number" id="totalJobs">0</div>
@@ -535,47 +501,11 @@ body{
     </div>
   </div>
 
+  <!-- 채용공고 그리드 -->
   <div class="jobs-grid" id="jobsGrid">
     <div class="no-data">
       <h3>📋 채용정보를 불러오는 중...</h3>
       <p style="color:#666">잠시만 기다려주세요.</p>
-    </div>
-  </div>
-</div>
-
-<!-- 챗봇 스타일 배너 -->
-<div class="chatbot-banner">
-  <button class="chatbot-trigger" id="chatbotTrigger" onclick="toggleChatbot()">
-    💬
-  </button>
-  
-  <div class="chatbot-widget" id="chatbotWidget">
-    <div class="chatbot-header">
-      <h3>🎓 G-TELP IBT 안내</h3>
-      <button class="chatbot-close" onclick="toggleChatbot()">×</button>
-    </div>
-    <div class="chatbot-body">
-      <div class="chatbot-message">
-        <h4>✨ G-TELP IBT 소개</h4>
-        <p>인터넷 기반 지텔프 시험(Internet-Based Test)으로 언제 어디서나 편리하게 응시할 수 있습니다.</p>
-        
-        <ul class="chatbot-features">
-          <li>온라인 원격 시험 가능</li>
-          <li>빠른 성적 발표 (시험 후 5일)</li>
-          <li>실무 중심의 평가</li>
-          <li>합리적인 응시료</li>
-          <li>공무원/기업 인정 자격증</li>
-        </ul>
-      </div>
-      
-      <div class="chatbot-message">
-        <h4>📚 시험 구성</h4>
-        <p>Grammar, Listening, Reading, Writing 4개 영역으로 구성되며, 총 2시간 30분 소요됩니다.</p>
-      </div>
-      
-      <a href="https://g-telp-ibt-6d5d4q2.gamma.site/" target="_blank" rel="noopener noreferrer" class="chatbot-link">
-        🔗 G-TELP IBT 자세히 보기
-      </a>
     </div>
   </div>
 </div>
@@ -585,25 +515,12 @@ let allJobs = [];
 let filteredJobs = [];
 let currentFilters = {
   location: '',
+  position: '',
   searchText: '',
   sortBy: 'company'
 };
 
 loadJobs();
-
-// 챗봇 토글
-function toggleChatbot(){
-  const widget = document.getElementById('chatbotWidget');
-  const trigger = document.getElementById('chatbotTrigger');
-  
-  if(widget.classList.contains('show')){
-    widget.classList.remove('show');
-    trigger.classList.remove('active');
-  } else {
-    widget.classList.add('show');
-    trigger.classList.add('active');
-  }
-}
 
 async function loadJobs(){
   const grid = document.getElementById('jobsGrid');
@@ -749,6 +666,7 @@ function clearSearch(){
   document.getElementById('searchInput').value = '';
   currentFilters.searchText = '';
   currentFilters.location = '';
+  currentFilters.position = '';
   currentFilters.sortBy = 'company';
   document.getElementById('sortSelect').value = 'company';
   
@@ -765,6 +683,7 @@ function clearSearch(){
 
 function applyFilters(){
   filteredJobs = allJobs.filter(job => {
+    // 검색어 필터
     if(currentFilters.searchText){
       const searchLower = currentFilters.searchText.toLowerCase();
       const title = (job.job_title || '').toLowerCase();
@@ -780,9 +699,21 @@ function applyFilters(){
       }
     }
     
+    // 지역 필터
     if(currentFilters.location){
       const jobLocation = job.location || '';
       if(!jobLocation.includes(currentFilters.location)){
+        return false;
+      }
+    }
+    
+    // 직종 필터
+    if(currentFilters.position){
+      const jobTitle = (job.job_title || '').toLowerCase();
+      const jobPosition = (job.positionExtracted || '').toLowerCase();
+      const filterPosition = currentFilters.position.toLowerCase();
+      
+      if(!jobTitle.includes(filterPosition) && !jobPosition.includes(filterPosition)){
         return false;
       }
     }
