@@ -80,7 +80,22 @@ async function loadJobs() {
             const company = job.company_name || job['회사명'] || '회사명 미상';
             const location = job.location || job['지역'] || '전국';
             const site = job.source_site || job['사이트'] || '출처 미상';
-            const url = job.job_url || job['URL'] || '#';
+
+            // 🔗 링크 필드 자동 인식
+            let url = job.job_url || job['Job_url'] || job['JOB_URL'] || job['url'] || job['Url'] ||
+                      job['링크'] || job['채용링크'] || job['상세링크'] || job['지원링크'] ||
+                      job['채용URL'] || job['주소'] || job['웹사이트'] || '';
+
+            // URL 자동 보정
+            if (url && !url.startsWith('http')) {
+                url = 'https://' + url.replace(/^\/+/, '');
+            }
+
+            // URL이 없으면 구글 검색으로 대체
+            if (!url || url.trim() === '') {
+                const searchTerm = encodeURIComponent((company || '') + ' ' + (title || ''));
+                url = `https://www.google.com/search?q=${searchTerm}`;
+            }
 
             return `
                 <div class="job-card">
