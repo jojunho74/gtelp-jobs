@@ -179,6 +179,12 @@
       border: 1px solid #bee5eb;
     }
     
+    .alert-warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+    
     .hidden {
       display: none;
     }
@@ -191,6 +197,30 @@
     .download-btn:hover {
       background: #218838;
     }
+
+    .validation-info {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .validation-info h4 {
+      color: #1976D2;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .validation-info ul {
+      margin-left: 20px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .validation-info li {
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body>
@@ -201,6 +231,17 @@
     G-TELP CSV → JSON 변환기
   </h1>
   <p class="subtitle">CSV 파일을 업로드하면 JSON 형식으로 자동 변환됩니다</p>
+  
+  <div class="validation-info">
+    <h4>📌 CSV 파일 필수 필드 안내</h4>
+    <ul>
+      <li><strong>job_title</strong> - 채용공고 제목</li>
+      <li><strong>company_name</strong> - 회사명</li>
+      <li><strong>location</strong> - 지역 (예: 서울, 경기)</li>
+      <li><strong>job_url</strong> - 채용공고 링크 (http:// 또는 https://로 시작)</li>
+      <li><strong>organization_type</strong> - 기관 유형</li>
+    </ul>
+  </div>
   
   <div class="upload-section">
     <label for="csvFile" class="file-label">
@@ -225,6 +266,10 @@
       <div class="stat-box">
         <div class="stat-number" id="totalFields">0</div>
         <div class="stat-label">필드 개수</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="validUrls">0</div>
+        <div class="stat-label">유효한 URL</div>
       </div>
       <div class="stat-box">
         <div class="stat-number" id="fileSize">0</div>
@@ -302,6 +347,16 @@ function showAlert(message, type = 'info') {
   }
 }
 
+// URL 유효성 검사
+function isValidUrl(string) {
+  try {
+    const url = new URL(string);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch (_) {
+    return false;
+  }
+}
+
 // CSV → JSON 변환
 function convertCSVtoJSON() {
   const fileInput = document.getElementById('csvFile');
@@ -326,6 +381,14 @@ function convertCSVtoJSON() {
       
       const headers = rows[0].map(h => h.trim());
       
+      // 필수 필드 확인
+      const requiredFields = ['job_title', 'company_name', 'job_url'];
+      const missingFields = requiredFields.filter(field => !headers.includes(field));
+      
+      if (missingFields.length > 0) {
+        showAlert(`⚠️ 필수 필드가 없습니다: ${missingFields.join(', ')}`, 'warning');
+      }
+      
       // JSON 데이터 생성
       const jsonData = rows.slice(1).map(row => {
         const obj = {};
@@ -347,13 +410,43 @@ function convertCSVtoJSON() {
         return Object.values(item).some(val => val !== "");
       });
       
+      // URL 유효성 검사 및 통계
+      let validUrlCount = 0;
+      filteredData.forEach(item => {
+        // job_url이 있고 유효한 URL인지 확인
+        if (item.job_url) {
+          // URL이 http:// 또는 https://로 시작하지 않으면 추가
+          if (!item.job_url.startsWith('http://') && !item.job_url.startsWith('https://')) {
+            item.job_url = 'https://' + item.job_url;
+          }
+          
+          if (isValidUrl(item.job_url)) {
+            validUrlCount++;
+          }
+        }
+        
+        // organization_type도 URL인 경우 처리
+        if (item.organization_type && !item.organization_type.startsWith('http')) {
+          if (item.organization_type.includes('.') && !item.organization_type.includes(' ')) {
+            item.organization_type = 'https://' + item.organization_type;
+          }
+        }
+      });
+      
       convertedData = filteredData;
       
       // 통계 표시
       document.getElementById('totalRows').textContent = filteredData.length;
       document.getElementById('totalFields').textContent = headers.length;
+      document.getElementById('validUrls').textContent = validUrlCount;
       document.getElementById('fileSize').textContent = formatFileSize(file.size);
       document.getElementById('statsSection').classList.remove('hidden');
+      
+      // URL 검증 경고
+      if (validUrlCount < filteredData.length) {
+        const invalidCount = filteredData.length - validUrlCount;
+        showAlert(`⚠️ ${invalidCount}개 항목에 유효하지 않은 URL이 있습니다.`, 'warning');
+      }
       
       // 미리보기 (처음 3개만)
       const preview = filteredData.slice(0, 3);
@@ -364,7 +457,7 @@ function convertCSVtoJSON() {
       document.getElementById('previewSection').classList.remove('hidden');
       document.getElementById('downloadBtn').classList.remove('hidden');
       
-      showAlert(`✅ 변환 완료! ${filteredData.length}개 데이터가 준비되었습니다.`, 'success');
+      showAlert(`✅ 변환 완료! ${filteredData.length}개 데이터가 준비되었습니다. (유효 URL: ${validUrlCount}개)`, 'success');
       
     } catch (error) {
       showAlert('CSV 파일 형식이 올바르지 않습니다: ' + error.message, 'error');
@@ -385,18 +478,6 @@ function downloadJSON() {
     showAlert('변환된 데이터가 없습니다.', 'error');
     return;
   }
-  
-  // URL 필드 자동 변환 (기존 기능 통합)
-  convertedData.forEach(item => {
-    // organization_type이 URL이면 그대로 유지
-    if (item.organization_type && item.organization_type.startsWith('http')) {
-      item.organization_type = item.organization_type;
-    }
-    // job_url이 URL이면 그대로 유지
-    if (item.job_url && item.job_url.startsWith('http')) {
-      item.job_url = item.job_url;
-    }
-  });
   
   const jsonString = JSON.stringify(convertedData, null, 2);
   const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
