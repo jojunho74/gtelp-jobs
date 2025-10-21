@@ -204,23 +204,36 @@
       color: #1565C0;
       margin-bottom: 10px;
       font-size: 14px;
+      font-weight: 600;
     }
 
     .mapping-table {
       width: 100%;
       font-size: 12px;
       border-collapse: collapse;
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .mapping-table tr:hover {
+      background: #f5f5f5;
     }
 
     .mapping-table td {
-      padding: 5px;
-      border-bottom: 1px solid #ddd;
+      padding: 8px 12px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .mapping-table tr:last-child td {
+      border-bottom: none;
     }
 
     .mapping-table td:first-child {
       font-weight: 600;
       color: #1976D2;
-      width: 40%;
+      width: 45%;
+      font-family: 'Courier New', monospace;
     }
 
     .mapping-table td:last-child {
@@ -235,10 +248,10 @@
     <span>📂</span>
     G-TELP CSV → JSON 변환기
   </h1>
-  <p class="subtitle">잡코리아 크롤링 CSV 파일을 JSON 형식으로 자동 변환합니다</p>
+  <p class="subtitle">G-TELP 채용공고 CSV 파일을 JSON 형식으로 자동 변환합니다</p>
   
   <div class="mapping-info">
-    <h4>📋 CSV → JSON 필드 매핑 테이블</h4>
+    <h4>📋 CSV → JSON 필드 매핑 테이블 (실제 컬럼 기준)</h4>
     <table class="mapping-table">
       <tr>
         <td>job_title</td>
@@ -246,51 +259,43 @@
       </tr>
       <tr>
         <td>company_name</td>
-        <td>→ company (회사명)</td>
-      </tr>
-      <tr>
-        <td>company_size</td>
-        <td>→ companySize (회사규모)</td>
-      </tr>
-      <tr>
-        <td>company_type</td>
-        <td>→ companyType (회사유형)</td>
-      </tr>
-      <tr>
-        <td>industry</td>
-        <td>→ industry (산업분야)</td>
-      </tr>
-      <tr>
-        <td>employee_count</td>
-        <td>→ employeeCount (직원수)</td>
+        <td>→ company (회사명/기관명)</td>
       </tr>
       <tr>
         <td>location</td>
-        <td>→ location (근무지)</td>
-      </tr>
-      <tr>
-        <td>job_type</td>
-        <td>→ jobType (고용형태)</td>
-      </tr>
-      <tr>
-        <td>deadline</td>
-        <td>→ deadline (마감일)</td>
+        <td>→ location (근무지역)</td>
       </tr>
       <tr>
         <td>salary</td>
-        <td>→ salary (급여)</td>
+        <td>→ salary (급여정보)</td>
       </tr>
       <tr>
         <td>job_url</td>
-        <td>→ link (채용공고 링크)</td>
+        <td>→ link (채용공고 링크) ⭐</td>
       </tr>
       <tr>
-        <td>keyword_matched</td>
+        <td>source_site</td>
+        <td>→ source (출처 사이트)</td>
+      </tr>
+      <tr>
+        <td>search_keyword</td>
         <td>→ keyword (검색 키워드)</td>
       </tr>
       <tr>
+        <td>organization_type</td>
+        <td>→ orgType (기관 유형)</td>
+      </tr>
+      <tr>
+        <td>gtelp_relevance</td>
+        <td>→ relevance (G-TELP 관련도)</td>
+      </tr>
+      <tr>
+        <td>collection_date</td>
+        <td>→ collectedDate (수집 날짜)</td>
+      </tr>
+      <tr>
         <td>collection_time</td>
-        <td>→ collectedAt (수집시간)</td>
+        <td>→ collectedTime (수집 시간)</td>
       </tr>
     </table>
   </div>
@@ -317,7 +322,7 @@
       </div>
       <div class="stat-box">
         <div class="stat-number" id="totalFields">0</div>
-        <div class="stat-label">원본 필드 수</div>
+        <div class="stat-label">CSV 컬럼 수</div>
       </div>
       <div class="stat-box">
         <div class="stat-number" id="validUrls">0</div>
@@ -342,25 +347,19 @@
 <script>
 let convertedData = null;
 
-// 잡코리아 크롤링 데이터 필드 매핑 테이블
+// 실제 CSV 컬럼 → JSON 필드 매핑 (GTELP_MULTI_SITE_JOBS 기준)
 const FIELD_MAPPING = {
   'job_title': 'title',
   'company_name': 'company',
-  'company_size': 'companySize',
-  'company_type': 'companyType',
-  'industry': 'industry',
-  'employee_count': 'employeeCount',
   'location': 'location',
-  'job_type': 'jobType',
-  'deadline': 'deadline',
   'salary': 'salary',
   'job_url': 'link',
-  'keyword_matched': 'keyword',
-  'collection_time': 'collectedAt',
   'source_site': 'source',
-  'search_keyword': 'searchKeyword',
+  'search_keyword': 'keyword',
+  'organization_type': 'orgType',
   'gtelp_relevance': 'relevance',
-  'collection_date': 'collectedDate'
+  'collection_date': 'collectedDate',
+  'collection_time': 'collectedTime'
 };
 
 // 파일 선택 이벤트
@@ -435,145 +434,4 @@ function isValidUrl(string) {
 function cleanUrl(url) {
   if (!url) return '';
   
-  url = url.trim();
-  
-  // 이미 http:// 또는 https://로 시작하면 그대로 반환
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
-  }
-  
-  // www로 시작하거나 도메인 형태면 https:// 추가
-  if (url.startsWith('www.') || url.includes('.co.') || url.includes('.com')) {
-    return 'https://' + url;
-  }
-  
-  return url;
-}
-
-// CSV → JSON 변환
-function convertCSVtoJSON() {
-  const fileInput = document.getElementById('csvFile');
-  const file = fileInput.files[0];
-  
-  if (!file) {
-    showAlert('CSV 파일을 선택하세요.', 'error');
-    return;
-  }
-  
-  const reader = new FileReader();
-  
-  reader.onload = function(e) {
-    try {
-      const csvText = e.target.result;
-      const rows = parseCSV(csvText);
-      
-      if (rows.length < 2) {
-        showAlert('CSV 파일에 데이터가 없습니다.', 'error');
-        return;
-      }
-      
-      const headers = rows[0].map(h => h.trim());
-      
-      console.log('CSV 헤더:', headers);
-      
-      // JSON 데이터 생성 (필드명 매핑 적용)
-      const jsonData = rows.slice(1).map((row, index) => {
-        const csvObj = {};
-        const jsonObj = {};
-        
-        // 먼저 CSV 데이터를 원본 필드명으로 저장
-        headers.forEach((header, i) => {
-          let value = row[i] ? row[i].trim() : "";
-          
-          // 따옴표 제거
-          if (value.startsWith('"') && value.endsWith('"')) {
-            value = value.slice(1, -1);
-          }
-          
-          csvObj[header] = value;
-        });
-        
-        // 매핑 테이블에 따라 JSON 필드명으로 변환
-        Object.keys(csvObj).forEach(csvField => {
-          const jsonField = FIELD_MAPPING[csvField] || csvField; // 매핑 없으면 원본 사용
-          let value = csvObj[csvField];
-          
-          // link 필드(job_url)는 URL 정리
-          if (jsonField === 'link' && value) {
-            value = cleanUrl(value);
-          }
-          
-          jsonObj[jsonField] = value;
-        });
-        
-        return jsonObj;
-      });
-      
-      // 빈 행 제거
-      const filteredData = jsonData.filter(item => {
-        return Object.values(item).some(val => val !== "");
-      });
-      
-      // URL 유효성 검사
-      let validUrlCount = 0;
-      filteredData.forEach(item => {
-        if (item.link && isValidUrl(item.link)) {
-          validUrlCount++;
-        }
-      });
-      
-      convertedData = filteredData;
-      
-      // 통계 표시
-      document.getElementById('totalRows').textContent = filteredData.length;
-      document.getElementById('totalFields').textContent = headers.length;
-      document.getElementById('validUrls').textContent = validUrlCount;
-      document.getElementById('fileSize').textContent = formatFileSize(file.size);
-      document.getElementById('statsSection').classList.remove('hidden');
-      
-      // 미리보기 (처음 2개만)
-      const preview = filteredData.slice(0, 2);
-      const jsonString = JSON.stringify(preview, null, 2);
-      document.getElementById('output').textContent = jsonString + 
-        (filteredData.length > 2 ? `\n\n... 외 ${filteredData.length - 2}개 항목` : '');
-      
-      document.getElementById('previewSection').classList.remove('hidden');
-      document.getElementById('downloadBtn').classList.remove('hidden');
-      
-      showAlert(`✅ 변환 완료! ${filteredData.length}개 데이터 (유효 링크: ${validUrlCount}개)`, 'success');
-      
-      console.log('변환 샘플:', filteredData[0]);
-      
-    } catch (error) {
-      showAlert('CSV 파일 형식이 올바르지 않습니다: ' + error.message, 'error');
-      console.error(error);
-    }
-  };
-  
-  reader.onerror = function() {
-    showAlert('파일 읽기 중 오류가 발생했습니다.', 'error');
-  };
-  
-  reader.readAsText(file, 'UTF-8');
-}
-
-// JSON 다운로드
-function downloadJSON() {
-  if (!convertedData) {
-    showAlert('변환된 데이터가 없습니다.', 'error');
-    return;
-  }
-  
-  const jsonString = JSON.stringify(convertedData, null, 2);
-  const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'gtelp_data.json';
-  link.click();
-  
-  showAlert('💾 gtelp_data.json 파일이 다운로드되었습니다!', 'success');
-}
-</script>
-
-</body>
-</html>
+  url = url.tri
