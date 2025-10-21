@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-TELP 채용정보 허브</title>
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+.container { max-width: 1400px; margin: 0 auto; }
+.header {
+    background: white; padding: 30px; border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    text-align: center; margin-bottom: 30px;
+}
+.header h1 { color: #667eea; font-size: 2.5em; margin-bottom: 10px; }
+.header p { color: #666; font-size: 1.1em; }
+.jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+.job-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+.job-card:hover { transform: translateY(-5px); }
+.job-title { font-weight: 600; color: #333; font-size: 1.2em; }
+.job-company { color: #667eea; font-weight: 600; margin: 8px 0; }
+.job-tag {
+    background: #f0f4ff; color: #667eea;
+    padding: 5px 10px; border-radius: 20px; font-size: 0.85em;
+    margin-right: 5px;
+}
+.job-link {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white; padding: 8px 16px; border-radius: 25px;
+    text-decoration: none; font-weight: 600;
+}
+.no-data {
+    background: white; padding: 50px;
+    border-radius: 15px; text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🌟 G-TELP 채용정보 허브</h1>
+        <p>지텔프 관련 최신 채용 공고를 한눈에 확인하세요</p>
+    </div>
+
+    <div class="jobs-grid" id="jobsGrid">
+        <div class="no-data">
+            <h3>📋 채용정보를 불러오는 중...</h3>
+            <p style="color:#666;">잠시만 기다려주세요.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+async function loadJobs() {
+    const grid = document.getElementById('jobsGrid');
+    try {
+        const res = await fetch('gtelp_data.json');
+        if (!res.ok) throw new Error('데이터 파일을 불러올 수 없습니다.');
+        const jobs = await res.json();
+
+        grid.innerHTML = jobs.map(job => {
+            const title = job.job_title || job['제목'] || '제목 없음';
+            const company = job.company_name || job['회사명'] || '회사명 미상';
+            const location = job.location || job['지역'] || '전국';
+            const site = job.source_site || job['사이트'] || '출처 미상';
+            const url = job.job_url || job['URL'] || '#';
+
+            return `
+                <div class="job-card">
+                    <div class="job-title">${title}</div>
+                    <div class="job-company">🏢 ${company}</div>
+                    <div>
+                        <span class="job-tag">📍 ${location}</span>
+                        <span class="job-tag">💼 ${site}</span>
+                    </div>
+                    <a href="${url}" target="_blank" class="job-link">자세히 보기 →</a>
+                </div>
+            `;
+        }).join('');
+    } catch (e) {
+        grid.innerHTML = `
+            <div class="no-data">
+                <h3>⚠️ 채용정보를 불러오지 못했습니다</h3>
+                <p style="color:#666;">관리자가 데이터를 업로드하지 않았을 수 있습니다.</p>
+            </div>
+        `;
+    }
+}
+loadJobs();
+</script>
+</body>
+</html>
