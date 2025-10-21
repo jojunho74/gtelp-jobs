@@ -1,27 +1,199 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>G-TELP 채용정보 허브</title>
 <style>
-body{font-family:'Segoe UI', Tahoma, sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
-.container{max-width:1400px;margin:0 auto}
-.header{background:white;padding:30px;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,0.1);text-align:center;margin-bottom:30px}
-.header h1{color:#667eea;font-size:2.5em;margin-bottom:10px}
-.header p{color:#666;font-size:1.1em}
-.jobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:20px}
-.job-card{background:white;padding:25px;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,0.1);transition:0.3s}
-.job-card:hover{transform:translateY(-5px)}
-.job-title{font-weight:600;color:#333;font-size:1.2em}
-.job-company{color:#667eea;font-weight:600;margin:8px 0}
-.job-tag{background:#f0f4ff;color:#667eea;padding:5px 10px;border-radius:20px;font-size:0.85em;margin-right:5px}
-.job-link{display:inline-block;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:8px 16px;border-radius:25px;text-decoration:none;font-weight:600}
-.job-link:active,.job-link:focus{outline:none}
-.btn-disabled{display:inline-block;padding:8px 16px;border-radius:25px;background:#eee;color:#999;border:1px solid #ddd;font-weight:600}
-.small-search{display:inline-block;margin-left:8px;padding:6px 12px;border-radius:18px;background:#f0f4ff;color:#667eea;text-decoration:none;border:1px solid #dfe8ff;font-weight:600;font-size:0.9em}
-.no-data{background:white;padding:50px;border-radius:15px;text-align:center;box-shadow:0 5px 20px rgba(0,0,0,0.1)}
-@media(max-width:768px){.jobs-grid{grid-template-columns:1fr}}
+body{
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  min-height:100vh;
+  padding:20px;
+  margin:0;
+}
+.container{
+  max-width:1400px;
+  margin:0 auto;
+}
+.header{
+  background:white;
+  padding:30px;
+  border-radius:20px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.15);
+  text-align:center;
+  margin-bottom:30px;
+}
+.header h1{
+  color:#667eea;
+  font-size:2.5em;
+  margin:0 0 10px 0;
+  font-weight:700;
+}
+.header p{
+  color:#666;
+  font-size:1.1em;
+  margin:0;
+}
+.stats{
+  background:rgba(255,255,255,0.95);
+  padding:15px 25px;
+  border-radius:15px;
+  margin-bottom:30px;
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  flex-wrap:wrap;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+.stat-item{
+  text-align:center;
+}
+.stat-number{
+  font-size:2em;
+  font-weight:700;
+  color:#667eea;
+  margin:0;
+}
+.stat-label{
+  font-size:0.9em;
+  color:#666;
+  margin:5px 0 0 0;
+}
+.jobs-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+  gap:20px;
+}
+.job-card{
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+  transition:all 0.3s ease;
+  position:relative;
+}
+.job-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.15);
+}
+.job-title{
+  font-weight:600;
+  color:#333;
+  font-size:1.2em;
+  margin-bottom:10px;
+  line-height:1.4;
+}
+.job-company{
+  color:#667eea;
+  font-weight:600;
+  margin:8px 0;
+  font-size:1.05em;
+}
+.job-tags{
+  margin:12px 0;
+}
+.job-tag{
+  display:inline-block;
+  background:#f0f4ff;
+  color:#667eea;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:0.85em;
+  margin:4px 4px 4px 0;
+  border:1px solid #e0e8ff;
+}
+.job-actions{
+  margin-top:15px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.job-link{
+  display:inline-block;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  color:white;
+  padding:10px 20px;
+  border-radius:25px;
+  text-decoration:none;
+  font-weight:600;
+  transition:all 0.3s ease;
+  box-shadow:0 3px 10px rgba(102,126,234,0.3);
+}
+.job-link:hover{
+  transform:translateY(-2px);
+  box-shadow:0 5px 15px rgba(102,126,234,0.4);
+}
+.job-link:active{
+  transform:translateY(0);
+}
+.btn-disabled{
+  display:inline-block;
+  padding:10px 20px;
+  border-radius:25px;
+  background:#f5f5f5;
+  color:#999;
+  border:1px solid #ddd;
+  font-weight:600;
+  cursor:not-allowed;
+}
+.small-search{
+  display:inline-block;
+  padding:8px 16px;
+  border-radius:20px;
+  background:#f0f4ff;
+  color:#667eea;
+  text-decoration:none;
+  border:1px solid #dfe8ff;
+  font-weight:600;
+  font-size:0.9em;
+  transition:all 0.3s ease;
+}
+.small-search:hover{
+  background:#667eea;
+  color:white;
+  border-color:#667eea;
+}
+.no-data{
+  background:white;
+  padding:60px 30px;
+  border-radius:15px;
+  text-align:center;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+  grid-column:1/-1;
+}
+.no-data h3{
+  color:#333;
+  font-size:1.5em;
+  margin:0 0 10px 0;
+}
+.no-data p{
+  color:#666;
+  margin:0;
+}
+.relevance-badge{
+  position:absolute;
+  top:15px;
+  right:15px;
+  background:#ffd700;
+  color:#333;
+  padding:5px 10px;
+  border-radius:15px;
+  font-size:0.75em;
+  font-weight:700;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+@media(max-width:768px){
+  .jobs-grid{
+    grid-template-columns:1fr;
+  }
+  .header h1{
+    font-size:1.8em;
+  }
+  .stats{
+    gap:15px;
+  }
+}
 </style>
 </head>
 <body>
@@ -31,10 +203,25 @@ body{font-family:'Segoe UI', Tahoma, sans-serif;background:linear-gradient(135de
     <p>지텔프 관련 최신 채용 공고를 한눈에 확인하세요</p>
   </div>
 
+  <div class="stats" id="statsBar" style="display:none;">
+    <div class="stat-item">
+      <div class="stat-number" id="totalJobs">0</div>
+      <div class="stat-label">전체 공고</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number" id="validLinks">0</div>
+      <div class="stat-label">링크 있음</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number" id="highRelevance">0</div>
+      <div class="stat-label">고관련도</div>
+    </div>
+  </div>
+
   <div class="jobs-grid" id="jobsGrid">
     <div class="no-data">
       <h3>📋 채용정보를 불러오는 중...</h3>
-      <p style="color:#666">잠시만 기다려주세요.</p>
+      <p>잠시만 기다려주세요.</p>
     </div>
   </div>
 </div>
@@ -42,80 +229,138 @@ body{font-family:'Segoe UI', Tahoma, sans-serif;background:linear-gradient(135de
 <script>
 async function loadJobs(){
   const grid = document.getElementById('jobsGrid');
+  const statsBar = document.getElementById('statsBar');
+  
   try {
-    const res = await fetch('gtelp_data.json', {cache: "no-store"});
-    if(!res.ok) throw new Error('데이터 파일을 불러올 수 없습니다.');
+    const res = await fetch('gtelp_data.json', {
+      cache: "no-store",
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if(!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
     const jobs = await res.json();
+    
+    if(!Array.isArray(jobs) || jobs.length === 0){
+      throw new Error('데이터가 비어있습니다.');
+    }
 
-    grid.innerHTML = jobs.map(job => {
-      const title = job.job_title || job['제목'] || job['공고명'] || '제목 없음';
-      const company = job.company_name || job['회사명'] || job['기업명'] || '회사명 미상';
-      const location = job.location || job['위치'] || job['지역'] || '전국';
-      const site = job.source_site || job['출처'] || job['사이트'] || '출처 미상';
+    console.log('✅ 로드된 데이터:', jobs.length + '개');
+    console.log('📋 첫 번째 데이터 샘플:', jobs[0]);
 
-      // 모든 가능한 링크 필드 우선순위: (원본값을 최대한 유지)
-      let orig = job.job_url ?? job['Job_url'] ?? job['JOB_URL'] ?? job['jobUrl'] ?? job['url'] ?? job['URL'] ?? job['Url'] ??
-                 job['링크'] ?? job['채용링크'] ?? job['상세링크'] ?? job['지원링크'] ?? job['채용URL'] ?? job['주소'] ?? job['웹사이트'] ?? '';
+    // 통계 계산
+    let validLinkCount = 0;
+    let highRelevanceCount = 0;
 
-      orig = (typeof orig === 'object' && orig !== null && orig.Target) ? orig.Target : orig; // 엑셀 하이퍼링크 처리
+    const jobsHtml = jobs.map((job, index) => {
+      // 필드 추출 (실제 CSV 컬럼명 우선)
+      const title = job.job_title || job.title || '제목 없음';
+      const company = job.company_name || job.company || '회사명 미상';
+      const location = job.location || '전국';
+      const site = job.source_site || job.source || '출처 미상';
+      const salary = job.salary || '';
+      const relevance = job.gtelp_relevance || job.relevance || '';
+      const orgType = job.organization_type || job.orgType || '';
 
-      // trim
-      orig = (orig || '').toString().trim();
+      // job_url 필드 추출 (여러 가능성 고려)
+      let url = job.job_url || job.jobUrl || job.url || job.link || '';
 
-      // 자동 보정: http/https가 없으면 붙이되, 만약 값이 단순 키워드(공백 등)면 붙이지 않음
-      let url = '';
-      if(orig){
+      // URL 정리
+      if(url){
+        url = url.toString().trim();
+        
         // 이미 http(s)로 시작하면 그대로 사용
-        if(/^https?:\/\//i.test(orig)){
-          url = orig;
-        } else {
-          // orig이 도메인이나 경로처럼 보이면 https 붙여서 직접 연결
-          // 판단 기준: '.' 포함 (example.com) 또는 '/'로 시작하는 경로
-          if(orig.includes('.') || orig.startsWith('/')){
-            url = (orig.startsWith('//') ? 'https:' + orig : 'https://' + orig.replace(/^\/+/, ''));
+        if(!url.startsWith('http://') && !url.startsWith('https://')){
+          // 도메인 형태면 https:// 추가
+          if(url.includes('.') || url.startsWith('/')){
+            url = 'https://' + url.replace(/^\/+/, '');
           } else {
-            // 단어만 들어온 경우(예: "지원링크 없음" 같은 값)라면 url으로 보지 않음
+            // 단순 텍스트면 URL로 보지 않음
             url = '';
           }
         }
       }
 
-      // 링크 HTML: 링크가 있으면 바로가기 버튼(직접 링크), 없으면 비활성 버튼 + 선택적 검색링크
+      // 통계 집계
+      if(url) validLinkCount++;
+      if(relevance && (relevance.includes('High') || relevance.includes('Very'))) highRelevanceCount++;
+
+      // 관련도 배지
+      let relevanceBadge = '';
+      if(relevance && relevance.includes('Very High')){
+        relevanceBadge = '<div class="relevance-badge">⭐ 매우 높음</div>';
+      } else if(relevance && relevance.includes('High')){
+        relevanceBadge = '<div class="relevance-badge">✨ 높음</div>';
+      }
+
+      // 링크 HTML
       let linkHtml = '';
       if(url){
-        // 안전하게 HTML 이스케이프 해줄 필요가 있으나 여기선 템플릿으로 바로 삽입
-        linkHtml = `<a class="job-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">자세히 보기 →</a>`;
+        linkHtml = `<a class="job-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">🔗 자세히 보기</a>`;
       } else {
-        // 링크가 없을 때: '링크 없음' 버튼(비활성) + 작게 구글 검색(선택적)
-        const searchTerm = encodeURIComponent((company || '') + ' ' + (title || ''));
-        linkHtml = `<span class="btn-disabled">링크 없음</span>
-                    <a class="small-search" href="https://www.google.com/search?q=${searchTerm}" target="_blank" rel="noopener noreferrer">🔍 검색</a>`;
+        const searchTerm = encodeURIComponent(company + ' ' + title + ' 채용');
+        linkHtml = `
+          <span class="btn-disabled">링크 없음</span>
+          <a class="small-search" href="https://www.google.com/search?q=${searchTerm}" target="_blank" rel="noopener noreferrer">🔍 검색</a>
+        `;
       }
 
       return `
         <div class="job-card">
+          ${relevanceBadge}
           <div class="job-title">${escapeHtml(title)}</div>
           <div class="job-company">🏢 ${escapeHtml(company)}</div>
-          <div style="margin:8px 0 12px 0;">
+          <div class="job-tags">
             <span class="job-tag">📍 ${escapeHtml(location)}</span>
             <span class="job-tag">💼 ${escapeHtml(site)}</span>
+            ${salary ? `<span class="job-tag">💰 ${escapeHtml(salary)}</span>` : ''}
+            ${orgType ? `<span class="job-tag">🏛️ ${escapeHtml(orgType)}</span>` : ''}
           </div>
-          <div>${linkHtml}</div>
+          <div class="job-actions">
+            ${linkHtml}
+          </div>
         </div>
       `;
     }).join('');
+
+    grid.innerHTML = jobsHtml;
+
+    // 통계 표시
+    document.getElementById('totalJobs').textContent = jobs.length;
+    document.getElementById('validLinks').textContent = validLinkCount;
+    document.getElementById('highRelevance').textContent = highRelevanceCount;
+    statsBar.style.display = 'flex';
+
+    console.log('📊 통계:');
+    console.log('  - 전체 공고:', jobs.length);
+    console.log('  - 링크 있음:', validLinkCount);
+    console.log('  - 고관련도:', highRelevanceCount);
+
   } catch(err){
-    console.error(err);
-    grid.innerHTML = `<div class="no-data"><h3>⚠️ 채용정보를 불러오지 못했습니다</h3><p style="color:#666">관리자가 데이터를 업로드하지 않았을 수 있습니다.</p></div>`;
+    console.error('❌ 에러:', err);
+    grid.innerHTML = `
+      <div class="no-data">
+        <h3>⚠️ 채용정보를 불러오지 못했습니다</h3>
+        <p style="color:#666">
+          ${err.message}<br><br>
+          gtelp_data.json 파일이 같은 폴더에 있는지 확인해주세요.
+        </p>
+      </div>
+    `;
   }
 }
 
 function escapeHtml(text){
   const div = document.createElement('div');
-  div.textContent = text;
+  div.textContent = text || '';
   return div.innerHTML;
 }
 
+// 페이지 로드 시 실행
 loadJobs();
 </script>
 </body>
