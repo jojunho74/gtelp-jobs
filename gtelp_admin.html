@@ -1,133 +1,75 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>G-TELP 채용정보 허브 (관리자용)</title>
-<style>
-    body {
-        font-family: 'Segoe UI', Tahoma, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #333;
-        min-height: 100vh;
-        margin: 0;
-        padding: 30px;
-    }
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    .header {
-        text-align: center;
-        color: white;
-        margin-bottom: 30px;
-    }
-    .upload-box {
-        background: white;
-        padding: 40px;
-        border-radius: 15px;
-        border: 3px dashed #667eea;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    .upload-box:hover {
-        background: #f8f9ff;
-        border-color: #764ba2;
-    }
-    input[type=file] { display: none; }
-    pre {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        overflow-x: auto;
-        max-height: 400px;
-        white-space: pre-wrap;
-        word-break: break-all;
-        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-    }
-    .btn {
-        margin-top: 20px;
-        padding: 10px 20px;
-        border-radius: 8px;
-        background: #667eea;
-        color: white;
-        border: none;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-    .btn:hover {
-        background: #5a6fe0;
-    }
-</style>
+  <meta charset="UTF-8">
+  <title>G-TELP 데이터 관리자(admin)</title>
+  <style>
+    body { font-family: 'Pretendard', sans-serif; padding: 20px; }
+    input[type="file"] { margin: 10px 0; }
+    pre { background: #f5f5f5; padding: 10px; border: 1px solid #ccc; }
+    button { background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+  </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1>🛠️ G-TELP 채용정보 허브 (관리자용)</h1>
-        <p>CSV 또는 Excel 파일을 업로드하면 JSON으로 변환됩니다.</p>
-    </div>
 
-    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="handleFileUpload(event)">
-        📂 엑셀/CSV 파일 업로드 (CSV, XLSX, XLS)
-    </div>
+<h2>📂 G-TELP CSV → JSON 변환</h2>
+<p>CSV 파일을 업로드하면 <b>gtelp_data.json</b> 파일이 생성됩니다.</p>
 
-    <button class="btn" id="downloadBtn" style="display:none;" onclick="downloadJSON()">📥 JSON 파일로 저장</button>
+<input type="file" id="csvFile" accept=".csv">
+<button onclick="convertCSVtoJSON()">JSON 생성하기</button>
 
-    <pre id="jsonPreview">아직 데이터가 없습니다.</pre>
-</div>
+<h3>결과 미리보기</h3>
+<pre id="output"></pre>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-let jsonData = [];
+function convertCSVtoJSON() {
+  const fileInput = document.getElementById('csvFile');
+  const file = fileInput.files[0];
+  if (!file) {
+    alert('CSV 파일을 선택하세요.');
+    return;
+  }
 
-function handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const csvText = e.target.result;
+    const rows = csvText.trim().split('\n');
+    const headers = rows[0].split(',');
 
-    reader.onload = function(e) {
-        let data;
-        if (file.name.endsWith('.csv')) {
-            data = parseCSV(e.target.result);
-        } else {
-            const workbook = XLSX.read(e.target.result, {type: 'binary'});
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            data = XLSX.utils.sheet_to_json(sheet, {raw: false, defval: ''});
-        }
-
-        jsonData = data.filter(r => Object.values(r).some(v => v && v.toString().trim()));
-        document.getElementById('jsonPreview').textContent = JSON.stringify(jsonData, null, 2);
-        document.getElementById('downloadBtn').style.display = 'inline-block';
-    };
-
-    if (file.name.endsWith('.csv')) reader.readAsText(file, 'UTF-8');
-    else reader.readAsBinaryString(file);
-}
-
-function parseCSV(text) {
-    const [headerLine, ...lines] = text.split('\n');
-    const headers = headerLine.split(',').map(h => h.trim());
-    return lines.filter(l => l.trim()).map(l => {
-        const values = l.split(',');
-        const obj = {};
-        headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : '');
-        return obj;
+    const jsonData = rows.slice(1).map(row => {
+      const values = row.split(',');
+      const obj = {};
+      headers.forEach((header, i) => {
+        obj[header.trim()] = values[i] ? values[i].trim() : "";
+      });
+      return obj;
     });
-}
 
-function downloadJSON() {
-    const blob = new Blob([JSON.stringify(jsonData, null, 2)], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'gtelp_data.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // organization_type 또는 job_url 필드가 있다면 자동으로 링크로 변환
+    jsonData.forEach(item => {
+      if (item.organization_type && item.organization_type.startsWith('http')) {
+        item.organization_type = item.organization_type; // 그대로 유지
+      }
+      if (item.job_url && item.job_url.startsWith('http')) {
+        item.job_url = item.job_url;
+      }
+    });
+
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    document.getElementById('output').textContent = jsonString;
+
+    // JSON 파일 다운로드
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'gtelp_data.json';
+    link.click();
+  };
+
+  reader.readAsText(file, 'UTF-8');
 }
 </script>
+
 </body>
 </html>
