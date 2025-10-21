@@ -354,8 +354,8 @@ body{
       
       <span class="filter-label" style="margin-left:20px">정렬:</span>
       <select class="sort-select" id="sortSelect" onchange="sortJobs()">
-        <option value="recent">최신순</option>
         <option value="company">회사명순</option>
+        <option value="recent">최신순</option>
         <option value="relevance">관련도순</option>
       </select>
     </div>
@@ -401,7 +401,7 @@ let filteredJobs = [];
 let currentFilters = {
   location: '',
   searchText: '',
-  sortBy: 'recent'
+  sortBy: 'company'  // 기본값을 'company'로 변경
 };
 
 // 페이지 로드 시 실행
@@ -434,6 +434,9 @@ async function loadJobs(){
     // 통계 업데이트
     updateStats();
     statsBar.style.display = 'flex';
+    
+    // 기본 정렬을 회사명순으로 설정
+    sortJobsByCompany();
     
     // 채용공고 표시
     displayJobs(filteredJobs);
@@ -568,8 +571,8 @@ function clearSearch(){
   document.getElementById('searchInput').value = '';
   currentFilters.searchText = '';
   currentFilters.location = '';
-  currentFilters.sortBy = 'recent';
-  document.getElementById('sortSelect').value = 'recent';
+  currentFilters.sortBy = 'company';  // 초기화 시에도 회사명순
+  document.getElementById('sortSelect').value = 'company';
   
   // 필터 버튼 초기화
   document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -579,6 +582,7 @@ function clearSearch(){
   document.getElementById('searchResultInfo').classList.remove('show');
   
   filteredJobs = [...allJobs];
+  sortJobsByCompany();  // 회사명순으로 정렬
   displayJobs(filteredJobs);
 }
 
@@ -616,17 +620,22 @@ function applyFilters(){
   sortJobs();
 }
 
+// 회사명순 정렬 함수
+function sortJobsByCompany(){
+  filteredJobs.sort((a, b) => {
+    const companyA = (a.company_name || a.companyExtracted || '회사명 미상').toLowerCase();
+    const companyB = (b.company_name || b.companyExtracted || '회사명 미상').toLowerCase();
+    return companyA.localeCompare(companyB, 'ko');
+  });
+}
+
 // 정렬
 function sortJobs(){
   const sortBy = document.getElementById('sortSelect').value;
   currentFilters.sortBy = sortBy;
   
   if(sortBy === 'company'){
-    filteredJobs.sort((a, b) => {
-      const companyA = (a.company_name || a.companyExtracted || '').toLowerCase();
-      const companyB = (b.company_name || b.companyExtracted || '').toLowerCase();
-      return companyA.localeCompare(companyB);
-    });
+    sortJobsByCompany();
   } else if(sortBy === 'relevance'){
     filteredJobs.sort((a, b) => {
       const relevanceA = a.gtelp_relevance || '';
@@ -638,7 +647,7 @@ function sortJobs(){
       return 0;
     });
   } else {
-    // 최신순 (기본)
+    // 최신순
     filteredJobs.sort((a, b) => {
       const dateA = new Date(a.collection_date || 0);
       const dateB = new Date(b.collection_date || 0);
