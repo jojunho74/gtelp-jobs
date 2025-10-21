@@ -2,72 +2,410 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>G-TELP 데이터 관리자(admin)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G-TELP 데이터 관리자 (Admin)</title>
   <style>
-    body { font-family: 'Pretendard', sans-serif; padding: 20px; }
-    input[type="file"] { margin: 10px 0; }
-    pre { background: #f5f5f5; padding: 10px; border: 1px solid #ccc; }
-    button { background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
-    button:hover { background-color: #0056b3; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+      padding: 40px 20px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    
+    .upload-section {
+      background: #f8f9fa;
+      border: 2px dashed #dee2e6;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+    
+    .upload-section:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    
+    input[type="file"] {
+      display: none;
+    }
+    
+    .file-label {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .file-label:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .file-name {
+      margin-top: 15px;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s;
+      margin-bottom: 20px;
+    }
+    
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    
+    .preview {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    
+    .preview h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+    
+    pre {
+      background: #282c34;
+      color: #abb2bf;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.6;
+      max-height: 400px;
+    }
+    
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .download-btn {
+      background: #28a745;
+      margin-top: 15px;
+    }
+    
+    .download-btn:hover {
+      background: #218838;
+    }
   </style>
 </head>
 <body>
 
-<h2>📂 G-TELP CSV → JSON 변환</h2>
-<p>CSV 파일을 업로드하면 <b>gtelp_data.json</b> 파일이 생성됩니다.</p>
-
-<input type="file" id="csvFile" accept=".csv">
-<button onclick="convertCSVtoJSON()">JSON 생성하기</button>
-
-<h3>결과 미리보기</h3>
-<pre id="output"></pre>
+<div class="container">
+  <h1>
+    <span>📂</span>
+    G-TELP CSV → JSON 변환기
+  </h1>
+  <p class="subtitle">CSV 파일을 업로드하면 JSON 형식으로 자동 변환됩니다</p>
+  
+  <div class="upload-section">
+    <label for="csvFile" class="file-label">
+      📁 CSV 파일 선택
+    </label>
+    <input type="file" id="csvFile" accept=".csv">
+    <div id="fileName" class="file-name"></div>
+  </div>
+  
+  <button id="convertBtn" onclick="convertCSVtoJSON()" disabled>
+    🔄 JSON으로 변환하기
+  </button>
+  
+  <div id="alertBox" class="hidden"></div>
+  
+  <div id="statsSection" class="hidden">
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-number" id="totalRows">0</div>
+        <div class="stat-label">총 데이터 수</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="totalFields">0</div>
+        <div class="stat-label">필드 개수</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="fileSize">0</div>
+        <div class="stat-label">파일 크기</div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="previewSection" class="preview hidden">
+    <h3>📋 JSON 미리보기</h3>
+    <pre id="output"></pre>
+    <button id="downloadBtn" class="download-btn hidden" onclick="downloadJSON()">
+      💾 gtelp_data.json 다운로드
+    </button>
+  </div>
+</div>
 
 <script>
+let convertedData = null;
+
+// 파일 선택 이벤트
+document.getElementById('csvFile').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    document.getElementById('fileName').textContent = `선택된 파일: ${file.name}`;
+    document.getElementById('convertBtn').disabled = false;
+  }
+});
+
+// CSV 파싱 함수 (따옴표 안의 쉼표 처리)
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const result = [];
+  
+  for (let line of lines) {
+    const row = [];
+    let cell = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        row.push(cell.trim());
+        cell = '';
+      } else {
+        cell += char;
+      }
+    }
+    row.push(cell.trim());
+    result.push(row);
+  }
+  
+  return result;
+}
+
+// 파일 크기 포맷
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+// 알림 표시
+function showAlert(message, type = 'info') {
+  const alertBox = document.getElementById('alertBox');
+  alertBox.className = `alert alert-${type}`;
+  alertBox.textContent = message;
+  alertBox.classList.remove('hidden');
+  
+  if (type === 'success') {
+    setTimeout(() => alertBox.classList.add('hidden'), 5000);
+  }
+}
+
+// CSV → JSON 변환
 function convertCSVtoJSON() {
   const fileInput = document.getElementById('csvFile');
   const file = fileInput.files[0];
+  
   if (!file) {
-    alert('CSV 파일을 선택하세요.');
+    showAlert('CSV 파일을 선택하세요.', 'error');
     return;
   }
-
+  
   const reader = new FileReader();
+  
   reader.onload = function(e) {
-    const csvText = e.target.result;
-    const rows = csvText.trim().split('\n');
-    const headers = rows[0].split(',');
-
-    const jsonData = rows.slice(1).map(row => {
-      const values = row.split(',');
-      const obj = {};
-      headers.forEach((header, i) => {
-        obj[header.trim()] = values[i] ? values[i].trim() : "";
+    try {
+      const csvText = e.target.result;
+      const rows = parseCSV(csvText);
+      
+      if (rows.length < 2) {
+        showAlert('CSV 파일에 데이터가 없습니다.', 'error');
+        return;
+      }
+      
+      const headers = rows[0].map(h => h.trim());
+      
+      // JSON 데이터 생성
+      const jsonData = rows.slice(1).map(row => {
+        const obj = {};
+        headers.forEach((header, i) => {
+          let value = row[i] ? row[i].trim() : "";
+          
+          // 따옴표 제거
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.slice(1, -1);
+          }
+          
+          obj[header] = value;
+        });
+        return obj;
       });
-      return obj;
-    });
-
-    // organization_type 또는 job_url 필드가 있다면 자동으로 링크로 변환
-    jsonData.forEach(item => {
-      if (item.organization_type && item.organization_type.startsWith('http')) {
-        item.organization_type = item.organization_type; // 그대로 유지
-      }
-      if (item.job_url && item.job_url.startsWith('http')) {
-        item.job_url = item.job_url;
-      }
-    });
-
-    const jsonString = JSON.stringify(jsonData, null, 2);
-    document.getElementById('output').textContent = jsonString;
-
-    // JSON 파일 다운로드
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'gtelp_data.json';
-    link.click();
+      
+      // 빈 행 제거
+      const filteredData = jsonData.filter(item => {
+        return Object.values(item).some(val => val !== "");
+      });
+      
+      convertedData = filteredData;
+      
+      // 통계 표시
+      document.getElementById('totalRows').textContent = filteredData.length;
+      document.getElementById('totalFields').textContent = headers.length;
+      document.getElementById('fileSize').textContent = formatFileSize(file.size);
+      document.getElementById('statsSection').classList.remove('hidden');
+      
+      // 미리보기 (처음 3개만)
+      const preview = filteredData.slice(0, 3);
+      const jsonString = JSON.stringify(preview, null, 2);
+      document.getElementById('output').textContent = jsonString + 
+        (filteredData.length > 3 ? `\n\n... 외 ${filteredData.length - 3}개 항목` : '');
+      
+      document.getElementById('previewSection').classList.remove('hidden');
+      document.getElementById('downloadBtn').classList.remove('hidden');
+      
+      showAlert(`✅ 변환 완료! ${filteredData.length}개 데이터가 준비되었습니다.`, 'success');
+      
+    } catch (error) {
+      showAlert('CSV 파일 형식이 올바르지 않습니다: ' + error.message, 'error');
+      console.error(error);
+    }
   };
-
+  
+  reader.onerror = function() {
+    showAlert('파일 읽기 중 오류가 발생했습니다.', 'error');
+  };
+  
   reader.readAsText(file, 'UTF-8');
+}
+
+// JSON 다운로드
+function downloadJSON() {
+  if (!convertedData) {
+    showAlert('변환된 데이터가 없습니다.', 'error');
+    return;
+  }
+  
+  // URL 필드 자동 변환 (기존 기능 통합)
+  convertedData.forEach(item => {
+    // organization_type이 URL이면 그대로 유지
+    if (item.organization_type && item.organization_type.startsWith('http')) {
+      item.organization_type = item.organization_type;
+    }
+    // job_url이 URL이면 그대로 유지
+    if (item.job_url && item.job_url.startsWith('http')) {
+      item.job_url = item.job_url;
+    }
+  });
+  
+  const jsonString = JSON.stringify(convertedData, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'gtelp_data.json';
+  link.click();
+  
+  showAlert('💾 gtelp_data.json 파일이 다운로드되었습니다!', 'success');
 }
 </script>
 
